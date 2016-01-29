@@ -15,14 +15,7 @@ int main(int argc, char *argv[]) {
 	}else{
 		file = stdin;
 	}
-	while (!feof(file)){
-		fread(buf, 1, 1, file);
-		if (feof(file)){
-			if (!isspace(prev) && (prev != NULL)){
-				wordNum += 1;
-			}
-			break;
-		}
+	while (fread(buf, 1, 1, file) == 1){
 		charNum += 1;
 		cur = buf[0];
 		if (isspace(cur)){
@@ -34,6 +27,11 @@ int main(int argc, char *argv[]) {
 			}
 		}
 		prev = cur;
+	}
+	if (feof(file)){
+		if (!isspace(prev) && (prev != NULL)){
+			wordNum += 1;
+		}
 	}
 
 	if (argc >1){
