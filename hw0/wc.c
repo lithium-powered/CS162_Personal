@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
 		charNum += 1;
 		cur = buf[0];
 		if (isspace(cur)){
-			if ((charNum != 0) && (!isspace(prev))){
+			if ((charNum != 0) && (!isspace(prev)) && (prev != NULL)){
 				wordNum += 1;
 			}
 			if (cur == '\n'){
