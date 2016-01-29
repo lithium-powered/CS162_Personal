@@ -7,8 +7,8 @@ int main(int argc, char *argv[]) {
 	int charNum = 0;
 	int wordNum = 0;
 	int lineNum = 0;
-	char prev;
-	char cur;
+	char prev = NULL;
+	char cur = NULL;
 
 	if (argc >1){
 		file = fopen(argv[1], "r");
@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
 	while (!feof(file)){
 		fread(buf, 1, 1, file);
 		if (feof(file)){
-			if (!isspace(prev)){
+			if (!isspace(prev) && (prev != NULL)){
 				wordNum += 1;
 			}
 			break;
