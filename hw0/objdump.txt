@@ -1,0 +1,8 @@
+elf64-x86-64
+
+Dynamic Section:  NEEDED, INIT, FINI, DEBUG, SYMENT, etc.
+Sections: .interp, .note.ABI-tag, .gnu.version, .rela.dyn, .init, .text, etc.
+
+Main is in section .text with address 0x000000000040068d
+
+There is no section for the heap or stack, possibly because information about them is not available until execution.
