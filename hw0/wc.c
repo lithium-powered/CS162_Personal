@@ -9,9 +9,7 @@ int main(int argc, char *argv[]) {
 	int lineNum = 0;
 	char prev = NULL;
 	char cur = NULL;
-
-	printf("%x", argv);
-
+	
 	if (argc >1){
 		file = fopen(argv[1], "r");
 	}else{
