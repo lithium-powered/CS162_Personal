@@ -58,7 +58,12 @@ int cmd_exit(struct tokens *tokens) {
 
 /* Print current working directory */
 int cmd_pwd(struct tokens *tokens) {
-  
+  exit(0);
+}
+
+/* Change current directory */
+int cmd_cd(struct tokens *tokens) {
+  exit(0);
 }
 
 /* Looks up the built-in command, if it exists. */
