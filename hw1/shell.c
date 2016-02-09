@@ -24,6 +24,9 @@ struct termios shell_tmodes;
 /* Process group id for the shell */
 pid_t shell_pgid;
 
+/* Current directory for the shell */
+char *dir;
+
 int cmd_exit(struct tokens *tokens);
 int cmd_help(struct tokens *tokens);
 int cmd_pwd(struct tokens *tokens);
@@ -60,12 +63,14 @@ int cmd_exit(struct tokens *tokens) {
 
 /* Print current working directory */
 int cmd_pwd(struct tokens *tokens) {
-  exit(0);
+  printf("%s", dir);
+  return 1;
 }
 
 /* Change current directory */
 int cmd_cd(struct tokens *tokens) {
-  exit(0);
+  dir = tokens;
+  return 1;
 }
 
 /* Looks up the built-in command, if it exists. */
