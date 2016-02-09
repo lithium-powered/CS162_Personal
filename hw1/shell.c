@@ -40,6 +40,8 @@ typedef struct fun_desc {
 fun_desc_t cmd_table[] = {
   {cmd_help, "?", "show this help menu"},
   {cmd_exit, "exit", "exit the command shell"},
+  {cmd_pwd, "pwd", "print current working directory"},
+  {cmd_cd, "cd", "change current directory"}
 };
 
 /* Prints a helpful description for the given command */
@@ -52,6 +54,11 @@ int cmd_help(struct tokens *tokens) {
 /* Exits this shell */
 int cmd_exit(struct tokens *tokens) {
   exit(0);
+}
+
+/* Print current working directory */
+int cmd_pwd(struct tokens *tokens) {
+  
 }
 
 /* Looks up the built-in command, if it exists. */
