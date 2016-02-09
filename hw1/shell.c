@@ -25,7 +25,7 @@ struct termios shell_tmodes;
 pid_t shell_pgid;
 
 /* Current directory for the shell */
-char *dir;
+char dir[4096];
 
 int cmd_exit(struct tokens *tokens);
 int cmd_help(struct tokens *tokens);
@@ -63,13 +63,14 @@ int cmd_exit(struct tokens *tokens) {
 
 /* Print current working directory */
 int cmd_pwd(struct tokens *tokens) {
-  printf("%s", dir);
+  printf("%s\n", dir);
   return 1;
 }
 
 /* Change current directory */
 int cmd_cd(struct tokens *tokens) {
-  dir = tokens;
+  char *word = tokens_get_token(tokens, 1);
+  strcpy(dir, word);
   return 1;
 }
 
@@ -120,7 +121,6 @@ int main(int argc, char *argv[]) {
   while (fgets(line, 4096, stdin)) {
     /* Split our line into words. */
     struct tokens *tokens = tokenize(line);
-
     /* Find which built-in function to run. */
     int fundex = lookup(tokens_get_token(tokens, 0));
 
