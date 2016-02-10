@@ -135,8 +135,16 @@ int main(int argc, char *argv[]) {
         char *args[numTokens+1];
         int i;
         for(i = 0; i < numTokens; i++){
+          if (!strcmp("<", tokens_get_token(tokens, i))){
+            freopen (tokens_get_token(tokens, i+1),"r",stdin);
+            args[i] = NULL;
+            break;
+          } else if (!strcmp(">", tokens_get_token(tokens, i))){
+            freopen (tokens_get_token(tokens, i+1),"w",stdout);
+            args[i] = NULL;
+            break;
+          }
           args[i] = tokens_get_token(tokens, i);
-          printf("%s", args[i]);
         }
         args[numTokens] = NULL;
         char *firstArg = tokens_get_token(tokens, 0);
