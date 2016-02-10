@@ -136,6 +136,7 @@ int main(int argc, char *argv[]) {
         int i;
         for(i = 0; i < numTokens; i++){
           args[i] = tokens_get_token(tokens, i);
+          printf("%s", args[i]);
         }
         args[numTokens] = NULL;
         char *firstArg = tokens_get_token(tokens, 0);
