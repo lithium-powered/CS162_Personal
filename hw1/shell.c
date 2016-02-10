@@ -128,7 +128,6 @@ int main(int argc, char *argv[]) {
       cmd_table[fundex].fun(tokens);
     } else {
       /* REPLACE this to run commands as programs. */
-      printf("this ran\n");
       pid_t pid = fork();
       if (pid == 0){
         int numTokens = tokens_get_length(tokens);
