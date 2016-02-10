@@ -130,6 +130,7 @@ int main(int argc, char *argv[]) {
       /* REPLACE this to run commands as programs. */
       pid_t pid = fork();
       if (pid == 0){
+        
         int numTokens = tokens_get_length(tokens);
         char *args[numTokens+1];
         int i;
@@ -137,7 +138,28 @@ int main(int argc, char *argv[]) {
           args[i] = tokens_get_token(tokens, i);
         }
         args[numTokens] = NULL;
-        execv(tokens_get_token(tokens, 0), args);
+        char *firstArg = tokens_get_token(tokens, 0);
+
+        if (strchr(firstArg, '/') == NULL){
+          char *paths;
+          char *s = getenv("PATH");
+          const char delim[2] = ":";
+          const char delim2[2] = "/";
+          paths = strtok(s, delim);
+          char pathHolder[4096];
+          while (paths != NULL){
+            strcpy(pathHolder,  paths);
+            strcat(pathHolder, delim2);
+            strcat(pathHolder, firstArg);
+            args[0] = pathHolder;
+            if (execv(pathHolder, args) != -1){
+              break;
+            }
+            paths = strtok(NULL, delim);
+          }
+        }else{
+          execv(firstArg, args);
+        }
         exit(0);
       }else{
         int status;
