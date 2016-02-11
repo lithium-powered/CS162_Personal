@@ -141,6 +141,7 @@ int main(int argc, char *argv[]) {
       if (pid == 0){
         pid = getpid();
         setpgid(pid,pid);
+        tcsetpgrp(0, pid);
         signal(SIGINT, SIG_DFL);
         signal(SIGQUIT, SIG_DFL);
         signal(SIGKILL, SIG_DFL);
