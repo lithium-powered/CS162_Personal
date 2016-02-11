@@ -78,7 +78,13 @@ int cmd_cd(struct tokens *tokens) {
 
 /* Wait for all background jobs to finish */
 int cmd_wait(struct tokens *tokens){
-  waitpid(-1, NULL, 0);
+  int wait;
+  while (true){
+    waitpid(-1, &wait, 0);
+    if (errno == ECHILD){
+      break;
+    }
+  }
   return 1;
 }
 
