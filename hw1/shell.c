@@ -192,6 +192,7 @@ int main(int argc, char *argv[]) {
       }else{
         int status;
         wait(&status);
+        tcsetpgrp(0, getpid());
       }
     }
 
