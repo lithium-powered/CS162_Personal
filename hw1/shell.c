@@ -190,8 +190,10 @@ int main(int argc, char *argv[]) {
         }
         exit(0);
       }else{
-        int status;
-        wait(&status);
+        if (strcmp("&", tokens_get_token(tokens, tokens_get_length(tokens)-1)) != 0){
+          int status;
+          wait(&status);
+        }
         tcsetpgrp(0, getpid());
       }
     }
