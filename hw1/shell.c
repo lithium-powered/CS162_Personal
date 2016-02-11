@@ -31,6 +31,7 @@ int cmd_exit(struct tokens *tokens);
 int cmd_help(struct tokens *tokens);
 int cmd_pwd(struct tokens *tokens);
 int cmd_cd(struct tokens *tokens);
+int cmd_wait(struct tokens *tokens);
 
 /* Built-in command functions take token array (see parse.h) and return int */
 typedef int cmd_fun_t(struct tokens *tokens);
@@ -46,7 +47,8 @@ fun_desc_t cmd_table[] = {
   {cmd_help, "?", "show this help menu"},
   {cmd_exit, "exit", "exit the command shell"},
   {cmd_pwd, "pwd", "print current working directory"},
-  {cmd_cd, "cd", "change current directory"}
+  {cmd_cd, "cd", "change current directory"},
+  {cmd_wait, "wait", "wait for all background jobs to finish"}
 };
 
 /* Prints a helpful description for the given command */
@@ -71,6 +73,12 @@ int cmd_pwd(struct tokens *tokens) {
 int cmd_cd(struct tokens *tokens) {
   char *word = tokens_get_token(tokens, 1);
   strcpy(dir, word);
+  return 1;
+}
+
+/* Wait for all background jobs to finish */
+int cmd_wait(struct tokens *tokens){
+  waitpid(-1, NULL, 0);
   return 1;
 }
 
