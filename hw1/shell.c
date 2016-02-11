@@ -140,7 +140,7 @@ int main(int argc, char *argv[]) {
       pid_t pid = fork();
       if (pid == 0){
         pid = getpid();
-        tcsetpgrp(0, pid);
+        setpgid(pid,pid);
         signal(SIGINT, SIG_DFL);
         signal(SIGQUIT, SIG_DFL);
         signal(SIGKILL, SIG_DFL);
