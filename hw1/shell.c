@@ -111,6 +111,15 @@ void init_shell() {
 int main(int argc, char *argv[]) {
   init_shell();
 
+  signal(SIGINT, SIG_IGN);
+  signal(SIGQUIT, SIG_IGN);
+  signal(SIGKILL, SIG_IGN);
+  signal(SIGTERM, SIG_IGN);
+  signal(SIGTSTP, SIG_IGN);
+  signal(SIGCONT, SIG_IGN);
+  signal(SIGTTIN, SIG_IGN);
+  signal(SIGTTOU, SIG_IGN);
+
   static char line[4096];
   int line_num = 0;
 
@@ -130,7 +139,16 @@ int main(int argc, char *argv[]) {
       /* REPLACE this to run commands as programs. */
       pid_t pid = fork();
       if (pid == 0){
-        
+        pid = getpid();
+        tcsetpgrp(0, pid);
+        signal(SIGINT, SIG_DFL);
+        signal(SIGQUIT, SIG_DFL);
+        signal(SIGKILL, SIG_DFL);
+        signal(SIGTERM, SIG_DFL);
+        signal(SIGTSTP, SIG_DFL);
+        signal(SIGCONT, SIG_DFL);
+        signal(SIGTTIN, SIG_DFL);
+        signal(SIGTTOU, SIG_DFL);
         int numTokens = tokens_get_length(tokens);
         char *args[numTokens+1];
         int i;
