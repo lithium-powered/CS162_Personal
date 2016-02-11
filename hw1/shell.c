@@ -165,6 +165,9 @@ int main(int argc, char *argv[]) {
           }
           args[i] = tokens_get_token(tokens, i);
         }
+        if ((strcmp("&", tokens_get_token(tokens, tokens_get_length(tokens)-1)) == 0)){
+          args[numTokens-1] = NULL;
+        }
         args[numTokens] = NULL;
         char *firstArg = tokens_get_token(tokens, 0);
 
@@ -190,9 +193,9 @@ int main(int argc, char *argv[]) {
         }
         exit(0);
       }else{
-        if (strcmp("&", tokens_get_token(tokens, tokens_get_length(tokens)-1)) != 0){
+        if (!(strcmp("&", tokens_get_token(tokens, tokens_get_length(tokens)-1)) == 0)){
           int status;
-          waitpid(1, &status, 0);
+          waitpid(-1, &status, 0);
         }
         tcsetpgrp(0, getpid());
       }
