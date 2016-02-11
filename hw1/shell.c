@@ -192,7 +192,7 @@ int main(int argc, char *argv[]) {
       }else{
         if (strcmp("&", tokens_get_token(tokens, tokens_get_length(tokens)-1)) != 0){
           int status;
-          waitpid(-1, &status, 0);
+          waitpid(1, &status, 0);
         }
         tcsetpgrp(0, getpid());
       }
