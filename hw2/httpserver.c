@@ -46,11 +46,10 @@ void handle_files_request(int fd) {
   struct stat path_stat;
   char str[64] = "";
   strcat(str,server_files_directory);
-  strcat(str,"files/");
   strcat(str,request->path);
   stat(str,&path_stat);
+  printf("%s\n",str);
   char buffer[64];
-  printf("%s\n", "this");
 
   if(S_ISREG(path_stat.st_mode)){
     printf("%s\n", "one");
