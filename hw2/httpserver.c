@@ -95,6 +95,7 @@ void handle_files_request(int fd) {
         strcat(link,pDirent->d_name);
         strcat(link,"</a>\n");
         http_send_data(fd, link, strlen(link));
+        //pop
       }
       strcpy(link,"<a href='../'>Parent directory</a>");
       http_send_data(fd, link, strlen(link));
