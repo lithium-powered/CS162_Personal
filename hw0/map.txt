@@ -1,0 +1,27 @@
+_main  @ 0x4005c2
+recur @ 0x40057d
+_main stack: 0x7ffd96bd503c
+static data: 0x601048
+Heap: malloc 1: 0x2085010
+Heap: malloc 2: 0x2085080
+recur call 3: stack@ 0x7ffd96bd500c
+recur call 2: stack@ 0x7ffd96bd4fdc
+recur call 1: stack@ 0x7ffd96bd4fac
+recur call 0: stack@ 0x7ffd96bd4f7c
+
+_main  @ 0x4005c2 in section .text
+recur @ 0x40057d in section .text
+stuff @ 0x601048 in section .data
+
+.init: Executable instructions that contribute to a single initialization function for the executable or shared object containing the section.
+.text: The text or executable instructions of a program.
+.dynamic: dynamic linking information.
+.data: Initialized data that contribute to the program's memory image.
+
+The stack is growing down, as in the subsequent stack frames are in lower memory addresses than the previous.
+
+The stack frame is 0x30 bytes large.
+
+The heap is in memory address 0x2085010 and it is growing up, as the next allocations of the heap memory is larger than previous ones.
+
+The memory areas are not contiguous, the memory allocation is 100 bytes but the different between the two allocations is larger than 100 bytes.

@@ -1,0 +1,11 @@
+0x54829e884
+
+argv points to an array of pointers which point to program parameters.
+
+Address of the function main is at 0x0000000000400691.
+
+Info stack returns the stacks create from function calls. It includes info about the memory address of the functions and the arugments of those functions.
+
+Info frame gives information about the current frame you are in in the stack (stack level 0). We are given the start of the memory address for the frame, memory addresses of the arugments passed into the function for the frame, memory addresses of locally declared variables, and registers used by the frame.
+
+rdx is holding the memory address of the current frame. rdi, rbp, r12, rdx are holding address for the arguments given to the current frame. 
