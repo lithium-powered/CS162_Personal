@@ -44,7 +44,9 @@ void handle_files_request(int fd) {
   /* YOUR CODE HERE (Feel free to delete/modify the existing code below) */
   struct http_request *request = http_request_parse(fd);
   struct stat path_stat;
-  char str[64] = "files/";
+  char str[64] = "";
+  strcat(str,server_files_directory);
+  strcat(str,"files/");
   strcat(str,request->path);
   stat(str,&path_stat);
   char buffer[64];
