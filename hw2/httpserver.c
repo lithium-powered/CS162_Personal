@@ -53,6 +53,7 @@ void handle_files_request(int fd) {
     http_start_response(fd, 200);
     http_send_header(fd, "Content-Type", http_get_mime_type(request->path));
     sprintf(buffer, "%lu", path_stat.st_size);
+    printf("%s", buffer);
     http_send_header(fd, "Content-Length", buffer);
     http_end_headers(fd);
 
