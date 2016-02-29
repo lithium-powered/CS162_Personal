@@ -88,7 +88,10 @@ void handle_files_request(int fd) {
       char link[1248];
       while ((pDirent = readdir(pDir)) != NULL) {
         strcpy(link,"");
-        strcat(link,"<a href='WHATTTTT'>");
+        strcat(link,"<a href='");
+        strcat(link,dir);
+        strcat(link,"'>");
+
         /*
         strcat(link,"<a href='");
         strcat(link,dir);
