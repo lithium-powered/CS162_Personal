@@ -70,15 +70,8 @@ void handle_files_request(int fd) {
     printf("%s", "two");
   }else{
     printf("%s", "three");
-    http_start_response(fd, 200);
-    http_send_header(fd, "Content-type", "text/html");
+    http_start_response(fd, 404);
     http_end_headers(fd);
-    http_send_string(fd,
-        "<center>"
-        "<h1>Welcome to httpserver!</h1>"
-        "<hr>"
-        "<p>Nothing's here yet.</p>"
-        "</center>");
 
   }
   /*
