@@ -91,14 +91,6 @@ void handle_files_request(int fd) {
         strcat(link,"<a href='");
         strcat(link,pDirent->d_name);
         strcat(link,"'>");
-
-        /*
-        strcat(link,"<a href='");
-        strcat(link,dir);
-        strcat(link,"/");
-        strcat(link,pDirent->d_name);
-        strcat(link,"'>");
-        */
         strcat(link,pDirent->d_name);
         strcat(link,"</a>\n");
         http_send_data(fd, link, strlen(link));
