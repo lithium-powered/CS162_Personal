@@ -42,18 +42,26 @@ int server_proxy_port;
 void handle_files_request(int fd) {
 
   /* YOUR CODE HERE (Feel free to delete/modify the existing code below) */
+  struct stat path_stat;
+  stat(server_files_directory,path_stat);
 
-  struct http_request *request = http_request_parse(fd);
+  if(S_ISREG(path_stat.st_mode)){
+    http_start_response(fd, 200);
+    http_send_header(fd, "Content-Type", http_get_mime_type(server_files_directory));
+    http_send_header(fd, "Content-Length", path_stat.st_size);
+    http_end_headers(fd);
 
-  http_start_response(fd, 200);
-  http_send_header(fd, "Content-type", "text/html");
-  http_end_headers(fd);
-  http_send_string(fd,
-      "<center>"
-      "<h1>Welcome to httpserver!</h1>"
-      "<hr>"
-      "<p>Nothing's here yet.</p>"
-      "</center>");
+    FILE* file = fopen(filename, "rb");
+    char buffer[64];
+
+    size_t bytes_read;
+    while ( (bytes_read = fread(buffer, 1, 4, file)) == 64) {
+        http_send_data(server_files_directory, buffer, bytes_read);
+    }
+    close(server_files_directory);
+  }else{
+    printf("%s","hi");
+  }
 
 }
 
