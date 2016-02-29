@@ -28,6 +28,24 @@ char *server_files_directory;
 char *server_proxy_hostname;
 int server_proxy_port;
 
+void send_data_helper(struct http_request *request, struct stat path_stat, char* str, int fd){
+  char buffer[64];
+  http_start_response(fd, 200);
+  http_send_header(fd, "Content-Type", http_get_mime_type(request->path));
+  sprintf(buffer, "%lu", path_stat.st_size);
+  http_send_header(fd, "Content-Length", buffer);
+  http_end_headers(fd);
+
+  FILE* file = fopen(str, "rb");
+
+  size_t bytes_read;
+  while ( (bytes_read = fread(buffer, 1, 64, file)) == 64) {
+      http_send_data(fd, buffer, bytes_read);
+  }
+  http_send_data(fd, buffer, bytes_read);
+  close(fd);
+}
+
 /*
  * Reads an HTTP request from stream (fd), and writes an HTTP response
  * containing:
@@ -48,49 +66,26 @@ void handle_files_request(int fd) {
   strcat(str,server_files_directory);
   strcat(str,request->path);
   stat(str,&path_stat);
-  printf("%s\n",str);
-  char buffer[64];
 
   if(S_ISREG(path_stat.st_mode)){
-    printf("%s\n", "one");
+    send_data_helper(request, path_stat, str, fd);
 
-    http_start_response(fd, 200);
-    http_send_header(fd, "Content-Type", http_get_mime_type(request->path));
-    sprintf(buffer, "%lu", path_stat.st_size);
-    printf("%s", buffer);
-    http_send_header(fd, "Content-Length", buffer);
-    http_end_headers(fd);
-
-    FILE* file = fopen(str, "rb");
-
-    size_t bytes_read;
-    while ( (bytes_read = fread(buffer, 1, 64, file)) == 64) {
-        http_send_data(fd, buffer, bytes_read);
-    }
-    http_send_data(fd, buffer, bytes_read);
-    close(fd);
   }else if(S_ISDIR(path_stat.st_mode)){
-    printf("%s\n", "two");
+    strcat(str, "index.html");
+    stat(str,&path_stat);
+    if(S_ISREG(path_stat.st_mode)){
+      send_data_helper(request, path_stat, str, fd);
+    }else{
 
-
+    }
   }else{
     printf("%s\n", "three");
     http_start_response(fd, 404);
     http_end_headers(fd);
 
   }
-  /*
-  http_start_response(fd, 200);
-  http_send_header(fd, "Content-type", http_get_mime_type(server_files_directory));
-  http_end_headers(fd);
-  http_send_string(fd,
-      "<center>"
-      "<h1>Welcome to httpserver!</h1>"
-      "<hr>"
-      "<p>Nothing's here yet.</p>"
-      "</center>");
-  */
 }
+
 
 /*
  * Opens a connection to the proxy target (hostname=server_proxy_hostname and
