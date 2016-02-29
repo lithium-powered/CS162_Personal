@@ -71,18 +71,38 @@ void handle_files_request(int fd) {
     send_data_helper(request->path, path_stat, str, fd);
 
   }else if(S_ISDIR(path_stat.st_mode)){
+    char dir[64];
+    strcpy(dir,str);
     strcat(str, "index.html");
     stat(str,&path_stat);
     if(S_ISREG(path_stat.st_mode)){
       send_data_helper("index.html", path_stat, str, fd);
     }else{
+      http_start_response(fd, 200);
+      http_send_header(fd, "Content-Type", "text/html");
+      http_end_headers(fd);
 
+      struct dirent *pDirent;
+      DIR *pDir;
+      pDir = opendir(dir);
+      char link[1248] = "";
+      while ((pDirent = readdir(pDir)) != NULL) {
+        strcat(link,"<a href=");
+        strcat(link,dir);
+        strcat(link,pDirent->d_name);
+        strcat(link,">");
+        strcat(link,pDirent->d_name);
+        strcat(link,"</a>\n");
+        http_send_data(fd, link, strlen(link));
+      }
+      strcpy(link,"<a href='../'>Parent directory</a>");
+      http_send_data(fd, link, strlen(link));
+      http_end_headers(fd);
     }
   }else{
     printf("%s\n", "three");
     http_start_response(fd, 404);
     http_end_headers(fd);
-
   }
 }
 
