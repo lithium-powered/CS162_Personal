@@ -43,13 +43,15 @@ void handle_files_request(int fd) {
 
   /* YOUR CODE HERE (Feel free to delete/modify the existing code below) */
   struct http_request *request = http_request_parse(fd);
-
   struct stat path_stat;
-  stat(request->path,&path_stat);
+  char str[64] = "files/";
+  strcat(str,request->path);
+  stat(str,&path_stat);
+  char buffer[64];
+  printf("%s\n", "this");
 
   if(S_ISREG(path_stat.st_mode)){
-    printf("%s", "one");
-    char buffer[64];
+    printf("%s\n", "one");
 
     http_start_response(fd, 200);
     http_send_header(fd, "Content-Type", http_get_mime_type(request->path));
@@ -67,9 +69,11 @@ void handle_files_request(int fd) {
     http_send_data(fd, buffer, bytes_read);
     close(fd);
   }else if(S_ISDIR(path_stat.st_mode)){
-    printf("%s", "two");
+    printf("%s\n", "two");
+
+
   }else{
-    printf("%s", "three");
+    printf("%s\n", "three");
     http_start_response(fd, 404);
     http_end_headers(fd);
 
