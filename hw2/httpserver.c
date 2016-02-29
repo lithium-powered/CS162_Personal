@@ -120,6 +120,58 @@ void handle_files_request(int fd) {
 void handle_proxy_request(int fd) {
 
   /* YOUR CODE HERE */
+  struct sockaddr_in server_address;
+  memset(&server_address, 0, sizeof(server_address));
+  struct hostent *host = gethostbyname(server_proxy_hostname);
+  int socket_fd = socket(PF_INET, SOCK_STREAM, 0);
+  server_address.sin_family = AF_INET;
+  inet_aton(host->h_addr,&server_address.sin_addr);
+  server_address.sin_port = htons(server_proxy_port);
+  connect(socket_fd, (struct sockaddr*)&server_address, sizeof(server_address));
+
+  int nfds;
+  int retval;
+  fd_set rfds;
+  struct timeval tv;
+  tv.tv_sec = 2;
+  tv.tv_usec = 0;
+  if(fd > socket_fd){
+    nfds = fd + 1;
+  }else{
+    nfds = socket_fd + 1;
+  }
+  char buffer[64];
+  int size_read;
+
+  while(1){
+    FD_ZERO(&rfds);
+    FD_SET(fd, &rfds);
+    FD_SET(socket_fd, &rfds);
+    retval = select(nfds, &rfds, NULL, NULL, &tv);
+    if(retval == -1){
+       perror("Select failed.\n");
+    }
+    else if(retval){
+      if(FD_ISSET(fd, &rfds)){
+        while ((size_read = read(fd, buffer, sizeof(buffer))) == sizeof(buffer)){
+          write(socket_fd, buffer, size_read);
+        }
+        write(socket_fd, buffer, size_read);
+
+      }
+      if(FD_ISSET(socket_fd, &rfds)){
+        while ((size_read = read(socket_fd, buffer, sizeof(buffer))) == sizeof(buffer)){
+          write(fd, buffer, size_read);
+        }
+        write(fd, buffer, size_read);
+      }
+    }else{
+       printf("No data written to pipe in 2 last seconds.\n");
+    }
+  }
+
+
+
 
 }
 
