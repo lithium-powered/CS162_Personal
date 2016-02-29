@@ -60,10 +60,10 @@ void handle_files_request(int fd) {
     http_send_header(fd, "Content-Length", buffer);
     http_end_headers(fd);
 
-    FILE* file = fopen(request->path, "rb");
+    FILE* file = fopen(str, "rb");
 
     size_t bytes_read;
-    while ( (bytes_read = fread(buffer, 1, 4, file)) == 64) {
+    while ( (bytes_read = fread(buffer, 1, 64, file)) == 64) {
         http_send_data(fd, buffer, bytes_read);
     }
     http_send_data(fd, buffer, bytes_read);
