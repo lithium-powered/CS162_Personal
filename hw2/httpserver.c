@@ -100,7 +100,6 @@ void handle_files_request(int fd) {
       http_end_headers(fd);
     }
   }else{
-    printf("%s\n", "three");
     http_start_response(fd, 404);
     http_end_headers(fd);
   }
