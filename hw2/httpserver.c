@@ -63,6 +63,7 @@ void handle_files_request(int fd) {
     while ( (bytes_read = fread(buffer, 1, 4, file)) == 64) {
         http_send_data(fd, buffer, bytes_read);
     }
+    http_send_data(fd, buffer, bytes_read);
     close(fd);
   }else{
     printf("%s","hi");
