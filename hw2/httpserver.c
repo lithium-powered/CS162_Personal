@@ -91,9 +91,9 @@ void handle_files_request(int fd) {
         strcat(link,"<a href=");
         strcat(link,dir);
         strcat(link,pDirent->d_name);
-        strcat(link,">");
+        strcat(link,">FUCK");
         strcat(link,pDirent->d_name);
-        strcat(link,"</a>\n");
+        strcat(link,"FUCK</a>\n");
         http_send_data(fd, link, strlen(link));
       }
       strcpy(link,"<a href='../'>Parent directory</a>");
