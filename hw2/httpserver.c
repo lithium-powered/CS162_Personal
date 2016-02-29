@@ -28,10 +28,10 @@ char *server_files_directory;
 char *server_proxy_hostname;
 int server_proxy_port;
 
-void send_data_helper(struct http_request *request, struct stat path_stat, char* str, int fd){
+void send_data_helper(char *mime, struct stat path_stat, char* str, int fd){
   char buffer[64];
   http_start_response(fd, 200);
-  http_send_header(fd, "Content-Type", http_get_mime_type(request->path));
+  http_send_header(fd, "Content-Type", http_get_mime_type(mime));
   sprintf(buffer, "%lu", path_stat.st_size);
   http_send_header(fd, "Content-Length", buffer);
   http_end_headers(fd);
@@ -68,13 +68,13 @@ void handle_files_request(int fd) {
   stat(str,&path_stat);
 
   if(S_ISREG(path_stat.st_mode)){
-    send_data_helper(request, path_stat, str, fd);
+    send_data_helper(request->path, path_stat, str, fd);
 
   }else if(S_ISDIR(path_stat.st_mode)){
     strcat(str, "index.html");
     stat(str,&path_stat);
     if(S_ISREG(path_stat.st_mode)){
-      send_data_helper(request, path_stat, str, fd);
+      send_data_helper("index.html", path_stat, str, fd);
     }else{
 
     }
