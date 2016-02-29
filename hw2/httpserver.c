@@ -85,8 +85,9 @@ void handle_files_request(int fd) {
       struct dirent *pDirent;
       DIR *pDir;
       pDir = opendir(dir);
-      char link[1248] = "";
+      char link[1248];
       while ((pDirent = readdir(pDir)) != NULL) {
+        strcpy(link,"");
         strcat(link,"<a href=");
         strcat(link,dir);
         strcat(link,pDirent->d_name);
