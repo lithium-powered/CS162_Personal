@@ -32,7 +32,7 @@ void *mm_malloc(size_t size) {
         currentMeta->size = size;
         currentMeta->free = 0;
         metaTail = metaHead;
-        memset(currentMeta+headerSize,0,currentMeta->size);
+        zeroData(currentMeta);
         return currentMeta + headerSize;
     }
     while(currentMeta != NULL){
@@ -43,14 +43,14 @@ void *mm_malloc(size_t size) {
                 newMeta->next = currentMeta->prev;
                 newMeta->size = currentMeta->size - size - headerSize;
                 currentMeta->next = newMeta;
+                currentMeta->free = 0;
                 currentMeta->size = size;
-                memset(currentMeta+headerSize,0,currentMeta->size);
-                return currentMeta + headerSize;
+
             }else{
                 currentMeta->free = 0;
-                memset(currentMeta+headerSize,0,currentMeta->size);
-                return currentMeta + headerSize;
             }
+            zeroData(currentMeta);
+            return currentMeta + headerSize;
         }
         currentMeta = currentMeta->next;
     }
@@ -61,7 +61,7 @@ void *mm_malloc(size_t size) {
         currentMeta->size = size;
         metaTail->next = currentMeta;
         metaTail = currentMeta;
-        memset(currentMeta+headerSize,0,currentMeta->size);
+        zeroData(currentMeta);
         return metaTail;
 
     }
@@ -76,5 +76,9 @@ void *mm_realloc(void *ptr, size_t size) {
 void mm_free(void *ptr) {
     struct block *currentMeta = (struct block*) (ptr - headerSize);
     currentMeta->free = 1;
+    zeroData(currentMeta);
+}
+
+void zeroData(struct block *currentMeta){
     memset(currentMeta+headerSize,0,currentMeta->size);
 }
