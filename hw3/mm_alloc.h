@@ -11,3 +11,10 @@
 void *mm_malloc(size_t size);
 void *mm_realloc(void *ptr, size_t size);
 void mm_free(void *ptr);
+
+struct block{
+	struct block *prev;
+	struct block *next;
+	int free;
+	int size;
+};
