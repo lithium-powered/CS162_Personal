@@ -55,7 +55,7 @@ void *mm_malloc(size_t size) {
         }
         currentMeta = currentMeta->next;
     }
-    /*if ((currentMeta = sbrk(size+headerSize))){
+    if ((currentMeta = sbrk(size+headerSize))){
         currentMeta->prev = metaTail;
         currentMeta->next = NULL;
         currentMeta->free = 0;
@@ -64,7 +64,7 @@ void *mm_malloc(size_t size) {
         metaTail = currentMeta;
         zeroData(currentMeta);
         return metaTail;
-    }*/
+    }
     return NULL;
 }
 
