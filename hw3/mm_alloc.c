@@ -67,6 +67,6 @@ void *mm_realloc(void *ptr, size_t size) {
 }
 
 void mm_free(void *ptr) {
-    struct block *currentMeta = (struct block*) ptr;
+    struct block *currentMeta = (struct block*) (ptr - headerSize);
     currentMeta->free = 1;
 }
