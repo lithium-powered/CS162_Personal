@@ -41,7 +41,8 @@ void *mm_malloc(size_t size) {
             if(currentMeta->size > size+headerSize){
                 struct block *newMeta = currentMeta + headerSize + size;
                 newMeta->prev = currentMeta;
-                newMeta->next = currentMeta->prev;
+                newMeta->next = currentMeta->next;
+                currentMeta->free = 1;
                 newMeta->size = currentMeta->size - size - headerSize;
                 currentMeta->next = newMeta;
                 currentMeta->free = 0;
