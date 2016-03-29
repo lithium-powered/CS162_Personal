@@ -32,6 +32,7 @@ void *mm_malloc(size_t size) {
         currentMeta->size = size;
         currentMeta->free = 0;
         metaTail = metaHead;
+        memset(currentMeta+headerSize,0,currentMeta->size);
         return currentMeta + headerSize;
     }
     while(currentMeta != NULL){
@@ -43,9 +44,11 @@ void *mm_malloc(size_t size) {
                 newMeta->size = currentMeta->size - size - headerSize;
                 currentMeta->next = newMeta;
                 currentMeta->size = size;
+                memset(currentMeta+headerSize,0,currentMeta->size);
                 return currentMeta + headerSize;
             }else{
                 currentMeta->free = 0;
+                memset(currentMeta+headerSize,0,currentMeta->size);
                 return currentMeta + headerSize;
             }
         }
@@ -58,6 +61,7 @@ void *mm_malloc(size_t size) {
         currentMeta->size = size;
         metaTail->next = currentMeta;
         metaTail = currentMeta;
+        memset(currentMeta+headerSize,0,currentMeta->size);
         return metaTail;
 
     }
