@@ -42,8 +42,9 @@ void *mm_malloc(size_t size) {
                 struct block *newMeta = currentMeta + headerSize + size;
                 newMeta->prev = currentMeta;
                 newMeta->next = currentMeta->next;
-                currentMeta->free = 1;
+                newMeta->free = 1;
                 newMeta->size = currentMeta->size - size - headerSize;
+                zeroData(newMeta);
                 currentMeta->next = newMeta;
                 currentMeta->free = 0;
                 currentMeta->size = size;
