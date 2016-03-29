@@ -7,6 +7,7 @@
 #pragma once
 
 #include <stdlib.h>
+#include <string.h>
 
 void *mm_malloc(size_t size);
 void *mm_realloc(void *ptr, size_t size);
@@ -18,3 +19,5 @@ struct block{
 	int free;
 	int size;
 };
+
+void zeroData(struct block *currentMeta);
