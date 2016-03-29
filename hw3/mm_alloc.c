@@ -7,6 +7,7 @@
 #include "mm_alloc.h"
 #include <stdlib.h>
 #include <unistd.h>
+#include <stdio.h>
 
 struct block *metaHead;
 struct block *metaTail;
@@ -78,11 +79,14 @@ void *mm_realloc(void *ptr, size_t size) {
 void mm_free(void *ptr) {
     if (ptr){
         struct block *currentMeta = (struct block*) (ptr - headerSize);
+        if (currentMeta != metaHead){
+            printf("WHAT THE FUCK,%i/n",1);
+        }
         currentMeta->free = 1;
         zeroData(currentMeta);
     }
 }
 
 void zeroData(struct block *currentMeta){
-    //memset(currentMeta+headerSize,0,currentMeta->size);
+    memset(currentMeta+headerSize,0,currentMeta->size);
 }
