@@ -9,6 +9,7 @@
 #include <unistd.h>
 
 struct block *metaHead;
+struct block *metaTail;
 int firstMalloc = 1;
 
 #define headerSize sizeof(*metaHead)
@@ -22,10 +23,13 @@ void *mm_malloc(size_t size) {
     if(firstMalloc){
         metaHead = (struct block*) sbrk(0);
         firstMalloc = 0;
-        struct block *metaData = sbrk(size + headerSize);
-        metaData->size = size;
-        metaData->free = 0;
-        return metaData + headerSize;
+        currentMeta = sbrk(size + headerSize);
+        currentMeta->prev = NULL;
+        currentMeta->next = NULL;
+        currentMeta->size = size;
+        currentMeta->free = 0;
+        metaTail = metaHead;
+        return currentMeta + headerSize;
     }
     while(currentMeta != NULL){
         if((currentMeta->free)&& (currentMeta->size >= size+headerSize)){
@@ -43,6 +47,16 @@ void *mm_malloc(size_t size) {
             }
         }
         currentMeta = currentMeta->next;
+    }
+    if ((currentMeta = sbrk(size+headerSize))){
+        currentMeta->prev = metaTail;
+        currentMeta->next = NULL;
+        currentMeta->free = 0;
+        currentMeta->size = size;
+        metaTail->next = currentMeta;
+        metaTail = currentMeta;
+        return metaTail;
+
     }
     return NULL;
 }
