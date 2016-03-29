@@ -52,9 +52,11 @@ void *mm_malloc(size_t size) {
             zeroData(currentMeta);
             return currentMeta + headerSize;
         }
-        currentMeta->free = 0;
-        zeroData(currentMeta);
-        return currentMeta + headerSize;
+        if (currentMeta->free){
+            currentMeta->free = 0;
+            zeroData(currentMeta);
+            return currentMeta + headerSize;
+        }
         currentMeta = currentMeta->next;
     }
     /*if ((currentMeta = sbrk(size+headerSize))){
@@ -76,11 +78,9 @@ void *mm_realloc(void *ptr, size_t size) {
 }
 
 void mm_free(void *ptr) {
-    if (ptr){
         struct block *currentMeta = (struct block*) (ptr - headerSize);
         currentMeta->free = 1;
         zeroData(currentMeta);
-    }
 }
 
 void zeroData(struct block *currentMeta){
