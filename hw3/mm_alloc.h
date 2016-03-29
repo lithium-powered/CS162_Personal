@@ -11,3 +11,12 @@
 void *mm_malloc(size_t size);
 void *mm_realloc(void *ptr, size_t size);
 void mm_free(void *ptr);
+
+struct block{
+	struct block *prev = NULL;
+	struct block *next = NULL;
+	bool free;
+	int size;
+};
+
+#define headerSize sizeof(block)
