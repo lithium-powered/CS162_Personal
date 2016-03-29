@@ -78,10 +78,7 @@ void *mm_realloc(void *ptr, size_t size) {
 
 void mm_free(void *ptr) {
     if (ptr){
-        struct block *currentMeta = (struct block*) (ptr - headerSize);
-        if (currentMeta != metaHead){
-            printf("WHAT THE FUCK,%i/n",1);
-        }
+        struct block *currentMeta = (struct block*) ptr - headerSize;
         currentMeta->free = 1;
         zeroData(currentMeta);
     }
