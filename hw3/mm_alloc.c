@@ -52,9 +52,11 @@ void *mm_malloc(size_t size) {
             zeroData(currentMeta);
             return currentMeta + headerSize;
         }
-        currentMeta->free = 0;
-        zeroData(currentMeta);
-        return currentMeta + headerSize;
+        if (currentMeta->free){
+            currentMeta->free = 0;
+            zeroData(currentMeta);
+            return currentMeta + headerSize;
+        }
         currentMeta = currentMeta->next;
     }
     /*if ((currentMeta = sbrk(size+headerSize))){
