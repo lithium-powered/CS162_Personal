@@ -78,8 +78,19 @@ void *mm_realloc(void *ptr, size_t size) {
 void mm_free(void *ptr) {
     if (ptr){
         struct block *currentMeta = (struct block*)(((char *) ptr) - headerSize);
-        currentMeta->free = 1;
-        zeroData(currentMeta);
+        struct block *tail = currentMeta;
+        struct block *head = currentMeta;
+        while((head->prev != NULL) && (head->prev->free)){
+            head = head->prev;
+        }
+        while((tail->next != NULL) && (tail->next->free)){
+            tail = tail->next;
+        }
+        head->next = tail->next;
+        head->free = 1;
+        head->size = (char *) tail - (char *) head + tail->size;
+        zeroData(head);
+
     }
 }
 
