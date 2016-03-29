@@ -84,5 +84,5 @@ void mm_free(void *ptr) {
 }
 
 void zeroData(struct block *currentMeta){
-    memset(currentMeta+headerSize,0,currentMeta->size);
+    memset((char *)currentMeta+headerSize,0,currentMeta->size);
 }
