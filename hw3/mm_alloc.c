@@ -21,9 +21,9 @@ void *mm_malloc(size_t size) {
         return NULL;
     }
     if(firstMalloc){
-        metaHead = (struct block*) sbrk(0);
         firstMalloc = 0;
-        currentMeta = sbrk(size + headerSize);
+        metaHead = sbrk(size + headerSize);
+        currentMeta = metaHead;
         if (!currentMeta){
             return NULL;
         }
@@ -35,7 +35,6 @@ void *mm_malloc(size_t size) {
         zeroData(currentMeta);
         return currentMeta + headerSize;
     }
-    /*
     while(currentMeta != NULL){
         if((currentMeta->free)&& (currentMeta->size >= size)){
             if(currentMeta->size > size+headerSize){
@@ -55,7 +54,7 @@ void *mm_malloc(size_t size) {
         }
         currentMeta = currentMeta->next;
     }
-    if ((currentMeta = sbrk(size+headerSize))){
+    /*if ((currentMeta = sbrk(size+headerSize))){
         currentMeta->prev = metaTail;
         currentMeta->next = NULL;
         currentMeta->free = 0;
