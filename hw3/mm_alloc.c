@@ -24,6 +24,9 @@ void *mm_malloc(size_t size) {
         metaHead = (struct block*) sbrk(0);
         firstMalloc = 0;
         currentMeta = sbrk(size + headerSize);
+        if (!currentMeta){
+            return NULL;
+        }
         currentMeta->prev = NULL;
         currentMeta->next = NULL;
         currentMeta->size = size;
