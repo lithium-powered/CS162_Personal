@@ -90,6 +90,7 @@ void *mm_realloc(void *ptr, size_t size) {
     struct block *currentMeta = (struct block*)(((char *) ptr) - headerSize);
     memcpy((char *)newBlock, (char *) ptr, currentMeta->size);
     memset((char *)newBlock+currentMeta->size,0,size - currentMeta->size);
+    
     mm_free(ptr);
 
     return newBlock;
