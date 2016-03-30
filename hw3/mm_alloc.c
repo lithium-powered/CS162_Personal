@@ -72,11 +72,22 @@ void *mm_malloc(size_t size) {
 
 void *mm_realloc(void *ptr, size_t size) {
     /* YOUR CODE HERE */
-    struct block *currentMeta = (struct block*)(((char *) ptr) - headerSize);
+    if(ptr != NULL && size == 0){
+        mm_free(ptr);
+        return NULL;
+    }
+    if(ptr == NULL){
+        if(size == 0){
+            return NULL;
+        }else{
+            return mm_malloc(size);
+        }
+    }
     void *newBlock = mm_malloc(size);
     if (newBlock == NULL){
         return NULL;
     }
+    struct block *currentMeta = (struct block*)(((char *) ptr) - headerSize);
     memcpy((char *)newBlock, (char *) ptr, currentMeta->size);
     memset((char *)newBlock+currentMeta->size,0,size - currentMeta->size);
     mm_free(ptr);
