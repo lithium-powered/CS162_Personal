@@ -79,6 +79,7 @@ void *mm_realloc(void *ptr, size_t size) {
         return NULL;
     }
     memcpy((char *)newBlock, (char *) ptr, currentMeta->size);
+    memset((char *)newBlock+currentMeta->size,0,size - currentMeta->size);
 
     return newBlock;
 }
