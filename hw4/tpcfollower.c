@@ -119,29 +119,29 @@ int tpcfollower_del(tpcfollower_t *server, char *key) {
  */
 void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_t *res) {
   /* TODO: Implement me! */
-  char *value;
+  char *val;
   int ret;
   if(req->type == GETREQ){
-    if(ret = tpcfollower_get(server, req->key, value) == 0){
+    if((ret = tpcfollower_get(server, req->key, val)) == 0){
       res->type = GETRESP;
-      strcpy(res->body, value);
-      free(value);
+      strcpy(res->body, val);
+      free(val);
     }
   }else if(req->type == PUTREQ){
     res->type = VOTE;
-    if(ret = tpcfollower_put_check(server, req->key, req->value) == 0){
+    if((ret = tpcfollower_put_check(server, req->key, req->val)) == 0){
       strcpy(res->body, MSG_COMMIT);
-      tpclog_log(&(server->log), req->type, req->key, req->value);
+      tpclog_log(&(server->log), req->type, req->key, req->val);
     }
   }else if(req->type == DELREQ){
     res->type = VOTE;
-    if(ret = tpcfollower_del_check(server, req->key) == 0){
+    if((ret = tpcfollower_del_check(server, req->key)) == 0){
       strcpy(res->body, MSG_COMMIT);
-      tpclog_log(&(server->log), req->type, req->key, req->value);
+      tpclog_log(&(server->log), req->type, req->key, req->val);
     }
   }else if(req->type == REGISTER){
     int sockfd;
-    if(sockfd = connect_to(req->key, req->val, TIMEOUT) != -1){
+    if((sockfd = connect_to(req->key, server->port, TIMEOUT)) != -1){
       res->type = ACK;
     }else{
       res->type = ERROR;
