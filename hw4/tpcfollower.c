@@ -119,8 +119,44 @@ int tpcfollower_del(tpcfollower_t *server, char *key) {
  */
 void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_t *res) {
   /* TODO: Implement me! */
-  res->type = ERROR;
-  strcpy(res->body, ERRMSG_NOT_IMPLEMENTED);
+  char *value;
+  int ret;
+  if(req->type == GETREQ){
+    if(ret = tpcfollower_get(server, req->key, value) == 0){
+      res->type = GETRESP;
+      strcpy(res->body, value);
+      free(value);
+    }
+  }else if(req->type == PUTREQ){
+    res->type = VOTE;
+    if(ret = tpcfollower_put_check(server, req->key, req->value) == 0){
+      strcpy(res->body, MSG_COMMIT);
+      tpclog_log(&(server->log), req->type, req->key, req->value);
+    }
+  }else if(req->type == DELREQ){
+    res->type = VOTE;
+    if(ret = tpcfollower_del_check(server, req->key) == 0){
+      strcpy(res->body, MSG_COMMIT);
+      tpclog_log(&(server->log), req->type, req->key, req->value);
+    }
+  }else if(req->type == REGISTER){
+    int sockfd;
+    if(sockfd = connect_to(req->key, req->val, TIMEOUT) != -1){
+      res->type = ACK;
+    }else{
+      res->type = ERROR;
+      strcpy(res->body, ERRMSG_GENERIC_ERROR);
+    }
+  }else if(req->type == COMMIT){
+
+  }else if(req->type == ABORT){
+
+  }else{
+    res->type = ERROR;
+    strcpy(res->body, ERRMSG_GENERIC_ERROR);
+  }
+  res->type = ret;
+  strcpy(res->body, GETMSG(ret));
 }
 
 /* Generic entrypoint for this SERVER. Takes in a socket on SOCKFD, which
