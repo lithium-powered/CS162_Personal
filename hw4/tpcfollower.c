@@ -119,9 +119,9 @@ int tpcfollower_del(tpcfollower_t *server, char *key) {
  */
 void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_t *res) {
   /* TODO: Implement me! */
-  char *val;
   int ret;
   if(req->type == GETREQ){
+    char *val;
     if((ret = tpcfollower_get(server, req->key, val)) == 0){
       res->type = GETRESP;
       strcpy(res->body, val);
@@ -132,6 +132,9 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
     if((ret = tpcfollower_put_check(server, req->key, req->val)) == 0){
       strcpy(res->body, MSG_COMMIT);
       tpclog_log(&(server->log), req->type, req->key, req->val);
+    }else{
+      res->type = ret;
+      strcpy(res->body, GETMSG(ret));
     }
   }else if(req->type == DELREQ){
     res->type = VOTE;
@@ -155,8 +158,7 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
     res->type = ERROR;
     strcpy(res->body, ERRMSG_GENERIC_ERROR);
   }
-  res->type = ret;
-  strcpy(res->body, GETMSG(ret));
+  kvresponse_send(res, server->sockfd);
 }
 
 /* Generic entrypoint for this SERVER. Takes in a socket on SOCKFD, which
