@@ -168,6 +168,7 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
 
     }
   }else if(req->type == ABORT){
+    res->type = ACK;
     //server->pending_msg = NULL;
     memset(server->pending_key, 0, MAX_KEYLEN + 1);
     memset(server->pending_value, 0, MAX_VALLEN + 1);
