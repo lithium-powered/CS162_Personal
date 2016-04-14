@@ -191,7 +191,7 @@ void tpcleader_handle_tpc(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
     sockfd = elem->sockfd;
     kvrequest_send(req, sockfd);
     kvresponse_receive(res, sockfd);
-    if(res->type == ERROR){
+    if(!strcmp(res->body,"commit")){
       commit = 0;
       break;
     }
