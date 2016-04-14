@@ -123,11 +123,10 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
   if(req->type == GETREQ){
     if((ret = tpcfollower_get(server, req->key, res->body)) == 0){
       res->type = GETRESP;
-    }else{
 
-      res->type = ret;
+    }else{
+      res->type = ERROR;
       strcpy(res->body, GETMSG(ret));
-      kvresponse_send(res, server->sockfd);
     }
   }else if(req->type == PUTREQ){
     res->type = VOTE;
@@ -138,7 +137,7 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
       strcpy(server->pending_value, req->val);
       tpclog_log(&(server->log), req->type, req->key, req->val);
     }else{
-      res->type = ret;
+      res->type = ERROR;
       strcpy(res->body, GETMSG(ret));
     }
   }else if(req->type == DELREQ){
@@ -149,7 +148,7 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
       strcpy(server->pending_key, req->key);
       tpclog_log(&(server->log), req->type, req->key, req->val);
     }else{
-      res->type = ret;
+      res->type = ERROR;
       strcpy(res->body, GETMSG(ret));
     }
   }else if(req->type == REGISTER){
