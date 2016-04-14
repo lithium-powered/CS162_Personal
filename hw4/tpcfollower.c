@@ -130,8 +130,10 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
     }
   }else if(req->type == PUTREQ){
     res->type = VOTE;
-    server->state = TPC_WAIT;
-    if((ret = tpcfollower_put_check(server, req->key, req->val)) == 0){
+    if(server->state == TPC_WAIT){
+      res->type = ERROR;
+      strcpy(res->body, ERRMSG_INVALID_REQUEST);
+    }else if((ret = tpcfollower_put_check(server, req->key, req->val)) == 0){
       strcpy(res->body, MSG_COMMIT);
       server->pending_msg = PUTREQ;
       strcpy(server->pending_key, req->key);
@@ -141,10 +143,13 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
       res->type = ERROR;
       strcpy(res->body, GETMSG(ret));
     }
+    server->state = TPC_WAIT;
   }else if(req->type == DELREQ){
     res->type = VOTE;
-    server->state = TPC_WAIT;
-    if((ret = tpcfollower_del_check(server, req->key)) == 0){
+    if(server->state == TPC_WAIT){
+      res->type = ERROR;
+      strcpy(res->body, ERRMSG_INVALID_REQUEST);
+    }else if((ret = tpcfollower_del_check(server, req->key)) == 0){
       strcpy(res->body, MSG_COMMIT);
       server->pending_msg = DELREQ;
       strcpy(server->pending_key, req->key);
@@ -153,6 +158,7 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
       res->type = ERROR;
       strcpy(res->body, GETMSG(ret));
     }
+    server->state = TPC_WAIT;
   }else if(req->type == REGISTER){
     int sockfd;
     if((sockfd = connect_to(req->key, server->port, TIMEOUT)) != -1){
@@ -163,10 +169,7 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
     }
   }else if(req->type == COMMIT){
     res->type = ACK;
-    if(server->state != TPC_WAIT){
-      res->type = ERROR;
-      strcpy(res->body, ERRMSG_INVALID_REQUEST);
-    }else if(server->pending_msg == PUTREQ){
+    if(server->pending_msg == PUTREQ){
       tpcfollower_put(server, server->pending_key, server->pending_value);
       server->state = TPC_READY;
     }else if(server->pending_msg == DELREQ){
