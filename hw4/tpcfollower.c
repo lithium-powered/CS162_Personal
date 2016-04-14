@@ -123,7 +123,6 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
   if(req->type == GETREQ){
     if((ret = tpcfollower_get(server, req->key, res->body)) == 0){
       res->type = GETRESP;
-
     }else{
       res->type = ERROR;
       strcpy(res->body, GETMSG(ret));
@@ -159,14 +158,6 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
       strcpy(res->body, GETMSG(ret));
     }
     server->state = TPC_WAIT;
-  }else if(req->type == REGISTER){
-    int sockfd;
-    if((sockfd = connect_to(req->key, server->port, TIMEOUT)) != -1){
-      res->type = ACK;
-    }else{
-      res->type = ERROR;
-      strcpy(res->body, ERRMSG_GENERIC_ERROR);
-    }
   }else if(req->type == COMMIT){
     res->type = ACK;
     if(server->pending_msg == PUTREQ){
@@ -188,6 +179,17 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
     strcpy(res->body, ERRMSG_GENERIC_ERROR);
   }
   kvresponse_send(res, server->sockfd);
+
+  /*
+    }else if(req->type == REGISTER){
+    int sockfd;
+    if((sockfd = connect_to(req->key, server->port, TIMEOUT)) != -1){
+      res->type = ACK;
+    }else{
+      res->type = ERROR;
+      strcpy(res->body, ERRMSG_GENERIC_ERROR);
+    }
+  */
 }
 
 /* Generic entrypoint for this SERVER. Takes in a socket on SOCKFD, which
