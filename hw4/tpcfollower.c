@@ -159,6 +159,7 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
       strcpy(res->body, ERRMSG_GENERIC_ERROR);
     }
   }else if(req->type == COMMIT){
+    res->type = ACK;
     if(server->pending_msg == PUTREQ){
       tpcfollower_put(server, server->pending_key, server->pending_value);
     }else if(server->pending_msg == DELREQ){
