@@ -123,6 +123,9 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
   if(req->type == GETREQ){
     if((ret = tpcfollower_get(server, req->key, res->body)) == 0){
       res->type = GETRESP;
+    }else{
+      res->type = ret;
+      strcpy(res->body, GETMSG(ret));
     }
   }else if(req->type == PUTREQ){
     res->type = VOTE;
