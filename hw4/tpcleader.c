@@ -211,6 +211,13 @@ void tpcleader_handle_tpc(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
     }
     elem = elem->next;
   }
+  if(commit){
+    res->type = SUCCESS;
+  }else{
+    res->type = ERROR;
+    strcpy(res->body, ERRMSG_GENERIC_ERROR);
+  }
+
   for(counter = 0; counter < leader->redundancy; counter++){
     elem = head;
     head = elem->next;
