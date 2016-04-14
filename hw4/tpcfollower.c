@@ -130,6 +130,7 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
     }
   }else if(req->type == PUTREQ){
     res->type = VOTE;
+    server->state = TPC_WAIT;
     if((ret = tpcfollower_put_check(server, req->key, req->val)) == 0){
       strcpy(res->body, MSG_COMMIT);
       server->pending_msg = PUTREQ;
@@ -142,6 +143,7 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
     }
   }else if(req->type == DELREQ){
     res->type = VOTE;
+    server->state = TPC_WAIT;
     if((ret = tpcfollower_del_check(server, req->key)) == 0){
       strcpy(res->body, MSG_COMMIT);
       server->pending_msg = DELREQ;
@@ -161,10 +163,15 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
     }
   }else if(req->type == COMMIT){
     res->type = ACK;
-    if(server->pending_msg == PUTREQ){
+    if(server->state != TPC_WAIT){
+      res->type = ERROR;
+      strcpy(res->body, ERRMSG_INVALID_REQUEST);
+    }else if(server->pending_msg == PUTREQ){
       tpcfollower_put(server, server->pending_key, server->pending_value);
+      server->state = TPC_READY;
     }else if(server->pending_msg == DELREQ){
       tpcfollower_del(server, server->pending_key);
+      server->state = TPC_READY;
     }else{
 
     }
