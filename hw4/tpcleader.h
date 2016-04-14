@@ -42,6 +42,11 @@ typedef struct tpcleader {
   pthread_rwlock_t follower_lock; /* A lock used to protect the list of followers. */
 } tpcleader_t;
 
+typedef struct list_elem{
+  int sockfd;
+  struct list_elem *next;
+} list_elem;
+
 int tpcleader_init(tpcleader_t *leader, unsigned int follower_capacity, unsigned int redundancy);
 
 void tpcleader_register(tpcleader_t *leader, kvrequest_t *, kvresponse_t *);

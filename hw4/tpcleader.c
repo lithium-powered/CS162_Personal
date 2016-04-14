@@ -11,6 +11,7 @@
 #include "socket_server.h"
 #include "time.h"
 #include "tpcleader.h"
+#include "utlist.h"
 
 /* Initializes a tpcleader. Will return 0 if successful, or a negative error
  * code if not. FOLLOWER_CAPACITY indicates the maximum number of followers that
@@ -145,7 +146,6 @@ void tpcleader_handle_get(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
   int sockfd = connect_to(follower->host, follower->port, TIMEOUT);
   kvrequest_send(req, sockfd);
   kvresponse_receive(res, sockfd);
-  kvresponse_send(res, sockfd);
 }
 
 /* Handles an incoming TPC request REQ, and populates RES as a response.
@@ -163,8 +163,59 @@ void tpcleader_handle_tpc(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
     return;
   }
   /* TODO: Implement me! */
-  res->type = ERROR;
-  strcpy(res->body, ERRMSG_NOT_IMPLEMENTED);
+  int sockfd;
+  list_elem *elem;
+  list_elem *head = NULL;
+  follower_t *follower;
+  int counter;
+  int commit;
+
+  counter = 0;
+  follower = tpcleader_get_primary(leader, req->key);
+  sockfd = connect_to(follower->host, follower->port, TIMEOUT);
+  elem = malloc(sizeof(list_elem));
+  elem->sockfd = sockfd;
+  LL_APPEND(head, elem);
+  counter++;
+  while(counter < leader->redundancy){
+    follower = tpcleader_get_successor(leader, follower);
+    sockfd = connect_to(follower->host, follower->port, TIMEOUT);
+    elem = malloc(sizeof(list_elem));
+    elem->sockfd = sockfd;
+    LL_APPEND(head, elem);
+    counter++;
+  }
+  commit = 1;
+  elem = head;
+  for(counter = 0; counter < leader->redundancy; counter++){
+    sockfd = elem->sockfd;
+    kvrequest_send(req, sockfd);
+    kvresponse_receive(res, sockfd);
+    if(res->type == ERROR){
+      commit = 0;
+      break;
+    }
+    elem = elem->next;
+  }
+  if(commit){
+    req->type = COMMIT;
+  }else{
+    req->type = ABORT;
+  }
+  for(counter = 0; counter < leader->redundancy; counter++){
+    sockfd = elem->sockfd;
+    kvrequest_send(req, sockfd);
+    while(kvresponse_receive(res, sockfd)){
+      kvrequest_send(req, sockfd);
+    }
+    elem = elem->next;
+  }
+  for(counter = 0; counter < leader->redundancy; counter++){
+    elem = head;
+    head = elem->next;
+    free(elem);
+  }
+
 }
 
 /* Generic entrypoint for this LEADER. Takes in a socket on SOCKFD, which
