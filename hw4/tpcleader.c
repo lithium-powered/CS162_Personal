@@ -202,6 +202,7 @@ void tpcleader_handle_tpc(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
   }else{
     req->type = ABORT;
   }
+  elem = head;
   for(counter = 0; counter < leader->redundancy; counter++){
     sockfd = elem->sockfd;
     kvrequest_send(req, sockfd);
