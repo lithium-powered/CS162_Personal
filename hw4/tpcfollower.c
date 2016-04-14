@@ -131,6 +131,9 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
     res->type = VOTE;
     if((ret = tpcfollower_put_check(server, req->key, req->val)) == 0){
       strcpy(res->body, MSG_COMMIT);
+      server->pending_msg = PUTREQ;
+      strcpy(server->pending_key, req->key);
+      strcpy(server->pending_value, req->val);
       tpclog_log(&(server->log), req->type, req->key, req->val);
     }else{
       res->type = ret;
@@ -140,7 +143,12 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
     res->type = VOTE;
     if((ret = tpcfollower_del_check(server, req->key)) == 0){
       strcpy(res->body, MSG_COMMIT);
+      server->pending_msg = DELREQ;
+      strcpy(server->pending_key, req->key);
       tpclog_log(&(server->log), req->type, req->key, req->val);
+    }else{
+      res->type = ret;
+      strcpy(res->body, GETMSG(ret));
     }
   }else if(req->type == REGISTER){
     int sockfd;
@@ -151,7 +159,13 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
       strcpy(res->body, ERRMSG_GENERIC_ERROR);
     }
   }else if(req->type == COMMIT){
+    if(server->pending_msg == PUTREQ){
+      tpcfollower_put(server, server->pending_key, server->pending_value);
+    }else if(server->pending_msg == DELREQ){
+      tpcfollower_del(server, server->pending_key);
+    }else{
 
+    }
   }else if(req->type == ABORT){
 
   }else{
