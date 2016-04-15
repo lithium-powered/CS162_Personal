@@ -178,7 +178,6 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
     res->type = ERROR;
     strcpy(res->body, ERRMSG_GENERIC_ERROR);
   }
-  kvresponse_send(res, server->sockfd);
 
   /*
     }else if(req->type == REGISTER){
