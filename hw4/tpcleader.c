@@ -206,7 +206,6 @@ void tpcleader_handle_tpc(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
   for(counter = 0; counter < leader->redundancy; counter++){
     sockfd = elem->sockfd;
     kvrequest_send(req, sockfd);
-    kvresponse_receive(res, sockfd);
     /*
     while(!(res->type == ACK)){
       kvresponse_receive(res, sockfd);
@@ -219,7 +218,7 @@ void tpcleader_handle_tpc(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
     res->type = SUCCESS;
   }else{
     res->type = ERROR;
-    strcpy(res->body, "10000");
+    strcpy(res->body, ERRMSG_GENERIC_ERROR);
   }
 
   for(counter = 0; counter < leader->redundancy; counter++){
