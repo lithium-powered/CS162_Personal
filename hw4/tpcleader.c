@@ -191,7 +191,7 @@ void tpcleader_handle_tpc(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
     kvrequest_send(req, sockfd);
     memset(res->body, 0, MAX_VALLEN + 1);
     kvresponse_receive(res, sockfd);
-    if(strcmp(res->body,"commit") == 0){
+    if(strcmp(res->body,"commit") != 0){
       commit = 0;
       break;
     }
@@ -219,7 +219,7 @@ void tpcleader_handle_tpc(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
     res->type = SUCCESS;
   }else{
     res->type = ERROR;
-    strcpy(res->body, "error: unable to process request");
+    strcpy(res->body, "10000");
   }
 
   for(counter = 0; counter < leader->redundancy; counter++){
