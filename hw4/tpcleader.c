@@ -219,7 +219,7 @@ void tpcleader_handle_tpc(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
     res->type = SUCCESS;
   }else{
     res->type = ERROR;
-    strcpy(res->body, ERRMSG_GENERIC_ERROR);
+    strcpy(res->body, leader->redundancy);
   }
 
   for(counter = 0; counter < leader->redundancy; counter++){
