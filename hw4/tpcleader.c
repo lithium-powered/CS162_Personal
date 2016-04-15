@@ -146,7 +146,6 @@ void tpcleader_handle_get(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
   int sockfd = connect_to(follower->host, follower->port, TIMEOUT);
   kvrequest_send(req, sockfd);
   kvresponse_receive(res, sockfd);
-  strcpy(res->body, ERRMSG_GENERIC_ERROR);
 }
 
 /* Handles an incoming TPC request REQ, and populates RES as a response.
