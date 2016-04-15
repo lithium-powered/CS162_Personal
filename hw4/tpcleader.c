@@ -177,7 +177,7 @@ void tpcleader_handle_tpc(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
   elem->sockfd = sockfd;
   LL_APPEND(head, elem);
   counter++;
-  for(counter = 1; counter < leader->redundancy; counter++){}
+  for(counter = 1; counter < leader->redundancy; counter++){
     follower = tpcleader_get_successor(leader, follower);
     sockfd = connect_to(follower->host, follower->port, TIMEOUT);
     elem = malloc(sizeof(list_elem));
