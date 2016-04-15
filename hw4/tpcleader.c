@@ -165,7 +165,6 @@ void tpcleader_handle_tpc(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
   /* TODO: Implement me! */
   int sockfd;
   kvresponse_t *resFollower = malloc(sizeof(kvresponse_t));
-  kvrequest_t *reqPh2 = malloc(sizeof(kvrequest_t));
   list_elem *elem;
   list_elem *head = NULL;
   follower_t *follower;
@@ -200,14 +199,14 @@ void tpcleader_handle_tpc(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
     elem = elem->next;
   }
   if(commit){
-    reqPh2->type = COMMIT;
+    req->type = COMMIT;
   }else{
-    reqPh2->type = ABORT;
+    req->type = ABORT;
   }
   elem = head;
   for(counter = 0; counter < leader->redundancy; counter++){
     sockfd = elem->sockfd;
-    kvrequest_send(reqPh2, sockfd);
+    kvrequest_send(req, sockfd);
     //kvresponse_receive(res, sockfd);
     /*
     while(!(res->type == ACK)){
