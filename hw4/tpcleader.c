@@ -208,10 +208,12 @@ void tpcleader_handle_tpc(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
     sockfd = elem->sockfd;
     kvrequest_send(req, sockfd);
     kvresponse_receive(res, sockfd);
+    /*
     while(!(res->type == ACK)){
       kvresponse_receive(res, sockfd);
       kvrequest_send(req, sockfd);
     }
+    */
     elem = elem->next;
   }
   if(commit){
