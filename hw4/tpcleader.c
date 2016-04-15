@@ -208,13 +208,11 @@ void tpcleader_handle_tpc(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
   for(counter = 0; counter < leader->redundancy; counter++){
     sockfd = elem->sockfd;
     kvrequest_send(&reqPh2, sockfd);
-    //kvresponse_receive(res, sockfd);
-    /*
-    while(!(res->type == ACK)){
-      kvresponse_receive(res, sockfd);
-      kvrequest_send(req, sockfd);
+    kvresponse_receive(&resFollower, sockfd);
+    while(resFollower.type != ACK){
+      kvrequest_send(&reqPh2, sockfd);
+      kvresponse_receive(&resFollower, sockfd);
     }
-    */
     elem = elem->next;
   }
   if(commit){
