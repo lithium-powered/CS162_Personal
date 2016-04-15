@@ -224,7 +224,7 @@ void tpcleader_handle_tpc(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
     strcpy(res->body, ERRMSG_GENERIC_ERROR);
   }
   kvresponse_receive(&resFollower, head->sockfd);
-  if (resFollower.type == ACK){
+  if (resFollower.type != ACK){
     strcpy(res->body, ERRMSG_GENERIC_ERROR);
   }
 
