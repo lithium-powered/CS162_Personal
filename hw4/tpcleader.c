@@ -229,7 +229,6 @@ void tpcleader_handle_tpc(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
   }
 
   free(resFollower);
-  free(reqPh2);
 
   for(counter = 0; counter < leader->redundancy; counter++){
     elem = head;
