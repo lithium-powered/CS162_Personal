@@ -173,6 +173,7 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
     }
   }else if(req->type == ABORT){
     res->type = ACK;
+    server->state = TPC_READY;
   }else{
     res->type = ERROR;
     strcpy(res->body, ERRMSG_GENERIC_ERROR);
