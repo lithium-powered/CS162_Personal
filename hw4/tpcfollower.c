@@ -121,7 +121,10 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
   /* TODO: Implement me! */
   int ret;
   if(req->type == GETREQ){
-    if((ret = tpcfollower_get(server, req->key, res->body)) == 0){
+    if(server->state == TPC_WAIT){
+      res->type = ERROR;
+      strcpy(res->body, ERRMSG_GENERIC_ERROR);
+    }else if((ret = tpcfollower_get(server, req->key, res->body)) == 0){
       res->type = GETRESP;
     }else{
       res->type = ERROR;
