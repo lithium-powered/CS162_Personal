@@ -212,6 +212,7 @@ void tpcleader_handle_tpc(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
     if(resFollower.type != ACK){
       res->type = resFollower.type;
       strcpy(res->body, "what is this");
+      return;
 
     }
     elem = elem->next;
