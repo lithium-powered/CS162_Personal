@@ -163,16 +163,24 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
     server->state = TPC_WAIT;
   }else if(req->type == COMMIT){
     res->type = ACK;
-    server->state = TPC_READY;
-    if(server->pending_msg == PUTREQ){
+    if(server->state != TPC_WAIT){
+      res->type = ERROR;
+      strcpy(res->body, "Not waiting");
+    }else if(server->pending_msg == PUTREQ){
       tpcfollower_put(server, server->pending_key, server->pending_value);
     }else if(server->pending_msg == DELREQ){
       tpcfollower_del(server, server->pending_key);
     }else{
 
     }
+    server->state = TPC_READY;
   }else if(req->type == ABORT){
-    res->type = ACK;
+    if(server->state != TPC_WAIT){
+      res->type = ERROR;
+      strcpy(res->body, "Not waiting");
+    }else{
+      res->type = ACK;
+    }
     server->state = TPC_READY;
   }else{
     res->type = ERROR;
