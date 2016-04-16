@@ -172,15 +172,12 @@ void tpcleader_handle_tpc(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
   int counter;
   int commit;
 
-  counter = 0;
-  follower = tpcleader_get_primary(leader, req->key);
-  sockfd = connect_to(follower->host, follower->port, TIMEOUT);
-  elem = malloc(sizeof(list_elem));
-  elem->sockfd = sockfd;
-  LL_APPEND(head, elem);
-  counter++;
-  for(counter = 1; counter < leader->redundancy; counter++){
-    follower = tpcleader_get_successor(leader, follower);
+  for(counter = 0; counter < leader->redundancy; counter++){
+    if (counter == 0){
+      follower = tpcleader_get_primary(leader, req->key);
+    }else{
+      follower = tpcleader_get_successor(leader, follower);
+    }
     sockfd = connect_to(follower->host, follower->port, TIMEOUT);
     elem = malloc(sizeof(list_elem));
     elem->sockfd = sockfd;
@@ -191,6 +188,11 @@ void tpcleader_handle_tpc(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
   for(counter = 0; counter < leader->redundancy; counter++){
     sockfd = elem->sockfd;
     kvrequest_send(req, sockfd);
+    elem = elem->next;
+  }
+  elem = head;
+  for(counter = 0; counter < leader->redundancy; counter++){
+    sockfd = elem->sockfd;
     kvresponse_clear(&resFollower);
     kvresponse_receive(&resFollower, sockfd);
     if(strcmp(resFollower.body,"commit") != 0){
