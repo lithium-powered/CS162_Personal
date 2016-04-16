@@ -209,11 +209,6 @@ void tpcleader_handle_tpc(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
     sockfd = elem->sockfd;
     kvrequest_send(&reqPh2, sockfd);
     kvresponse_receive(&resFollower, sockfd);
-    if(resFollower.type != ACK){
-      res->type = resFollower.type;
-      strcpy(res->body, resFollower.body);
-      return;
-    }
     elem = elem->next;
   }
   if(commit){
