@@ -209,9 +209,10 @@ void tpcleader_handle_tpc(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
     sockfd = elem->sockfd;
     kvrequest_send(&reqPh2, sockfd);
     kvresponse_receive(&resFollower, sockfd);
-    while(resFollower.type != ACK){
-      kvrequest_send(&reqPh2, sockfd);
-      kvresponse_receive(&resFollower, sockfd);
+    if(resFollower.type != ACK){
+      res->type = resFollower.type;
+      strcpy(res->body, "what is this");
+
     }
     elem = elem->next;
   }
@@ -219,10 +220,6 @@ void tpcleader_handle_tpc(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
     res->type = SUCCESS;
   }else{
     res->type = ERROR;
-    strcpy(res->body, ERRMSG_GENERIC_ERROR);
-  }
-  kvresponse_receive(&resFollower, head->sockfd);
-  if (resFollower.type != ACK){
     strcpy(res->body, ERRMSG_GENERIC_ERROR);
   }
 
