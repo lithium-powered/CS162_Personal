@@ -195,7 +195,7 @@ void tpcleader_handle_tpc(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
     sockfd = elem->sockfd;
     kvresponse_clear(&resFollower);
     kvresponse_receive(&resFollower, sockfd);
-    if(strcmp(resFollower.body,"commit") != 0){
+    if(strcmp(resFollower.body, MSG_COMMIT) != 0){
       commit = 0;
       break;
     }
