@@ -163,7 +163,9 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
       strcpy(res->body, GETMSG(ret));
     }
   }else if(req->type == COMMIT){
-    if(server->pending_msg == PUTREQ){
+    if(server->state != TPC_READY){
+      //Do nothing
+    }else if(server->pending_msg == PUTREQ){
       tpcfollower_put(server, server->pending_key, server->pending_value);
     }else if(server->pending_msg == DELREQ){
       tpcfollower_del(server, server->pending_key);
