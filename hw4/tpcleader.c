@@ -209,9 +209,10 @@ void tpcleader_handle_tpc(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
   for(counter = 0; counter < leader->redundancy; counter++){
     sockfd = elem->sockfd;
     kvresponse_clear(&resFollower);
-    while(resFollower.type != ACK){
+    if(resFollower.type != ACK){
       kvrequest_send(&reqPh2, sockfd);
       kvresponse_receive(&resFollower, sockfd);
+      printf("%i", resFollower.type);
     }
     elem = elem->next;
   }
