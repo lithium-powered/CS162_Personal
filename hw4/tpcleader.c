@@ -204,6 +204,26 @@ void tpcleader_handle_tpc(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
   }else{
     reqPh2.type = ABORT;
   }
+
+  for(counter = 0; counter < leader->redundancy; counter++){
+    elem = head;
+    head = elem->next;
+    free(elem);
+  }
+
+  for(counter = 0; counter < leader->redundancy; counter++){
+    if (counter == 0){
+      follower = tpcleader_get_primary(leader, req->key);
+    }else{
+      follower = tpcleader_get_successor(leader, follower);
+    }
+    sockfd = connect_to(follower->host, follower->port, TIMEOUT);
+    elem = malloc(sizeof(list_elem));
+    elem->sockfd = sockfd;
+    LL_APPEND(head, elem);
+  }
+
+
   elem = head;
   for(counter = 0; counter < leader->redundancy; counter++){
     sockfd = elem->sockfd;
