@@ -212,7 +212,7 @@ void tpcleader_handle_tpc(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
     kvresponse_receive(&resFollower, sockfd);
     if(resFollower.type != ACK){
       res->type = ERROR;
-      break;
+      goto end2;
     }
     elem = elem->next;
   }
@@ -222,6 +222,8 @@ void tpcleader_handle_tpc(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
     res->type = ERROR;
     strcpy(res->body, ERRMSG_GENERIC_ERROR);
   }
+
+end2:
 
   for(counter = 0; counter < leader->redundancy; counter++){
     elem = head;
