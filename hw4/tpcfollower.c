@@ -239,6 +239,7 @@ int tpcfollower_rebuild_state(tpcfollower_t *server) {
     }else if(server->pending_msg == DELREQ){
       tpcfollower_del(server, server->pending_key);
     }
+    tpclog_clear_log(&(server->log));
     server->state = TPC_INIT;
   }else if(log_entry->type == ABORT){
     tpclog_clear_log(&(server->log));
@@ -246,6 +247,7 @@ int tpcfollower_rebuild_state(tpcfollower_t *server) {
   }else if((log_entry->type == PUTREQ) || (log_entry->type == DELREQ)){
     server->state = TPC_READY;
   }else{
+    tpclog_clear_log(&(server->log));
     server->state = TPC_INIT;
   }
   free(log_entry);
