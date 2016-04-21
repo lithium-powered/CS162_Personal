@@ -121,10 +121,11 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
   /* TODO: Implement me! */
   int ret;
   if(req->type == GETREQ){
-    if(server->state == TPC_WAIT){
+    /*if(server->state == TPC_READY){
       res->type = ERROR;
       strcpy(res->body, "Get while TPC_Wait");
-    }else if((ret = tpcfollower_get(server, req->key, res->body)) == 0){
+    }else */
+    if((ret = tpcfollower_get(server, req->key, res->body)) == 0){
       res->type = GETRESP;
     }else{
       res->type = ERROR;
@@ -132,7 +133,7 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
     }
   }else if(req->type == PUTREQ){
     res->type = VOTE;
-    if(server->state == TPC_WAIT){
+    if(server->state != TPC_INIT){
       res->type = ERROR;
       strcpy(res->body, ERRMSG_INVALID_REQUEST);
     }else if((ret = tpcfollower_put_check(server, req->key, req->val)) == 0){
@@ -141,14 +142,14 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
       strcpy(server->pending_key, req->key);
       strcpy(server->pending_value, req->val);
       tpclog_log(&(server->log), req->type, req->key, req->val);
+      server->state = TPC_READY;
     }else{
       res->type = ERROR;
       strcpy(res->body, GETMSG(ret));
     }
-    server->state = TPC_WAIT;
   }else if(req->type == DELREQ){
     res->type = VOTE;
-    if(server->state == TPC_WAIT){
+    if(server->state == TPC_READY){
       res->type = ERROR;
       strcpy(res->body, ERRMSG_INVALID_REQUEST);
     }else if((ret = tpcfollower_del_check(server, req->key)) == 0){
@@ -156,13 +157,12 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
       server->pending_msg = DELREQ;
       strcpy(server->pending_key, req->key);
       tpclog_log(&(server->log), req->type, req->key, req->val);
+      server->state = TPC_READY;
     }else{
       res->type = ERROR;
       strcpy(res->body, GETMSG(ret));
     }
-    server->state = TPC_WAIT;
   }else if(req->type == COMMIT){
-    res->type = ACK;
     if(server->pending_msg == PUTREQ){
       tpcfollower_put(server, server->pending_key, server->pending_value);
     }else if(server->pending_msg == DELREQ){
@@ -170,10 +170,11 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
     }else{
 
     }
-    server->state = TPC_READY;
+    res->type = ACK;
+    server->state = TPC_INIT;
   }else if(req->type == ABORT){
     res->type = ACK;
-    server->state = TPC_READY;
+    server->state = TPC_INIT;
   }else{
     res->type = ERROR;
     strcpy(res->body, ERRMSG_GENERIC_ERROR);
