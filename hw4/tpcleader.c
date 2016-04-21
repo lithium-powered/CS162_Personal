@@ -209,8 +209,7 @@ void tpcleader_handle_tpc(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
     sockfd = elem->sockfd;
     kvresponse_clear(&resFollower);
     kvrequest_send(&reqPh2, sockfd);
-    kvresponse_receive(&resFollower, sockfd);
-    if(resFollower.type == ERROR){
+    if(!kvresponse_receive(&resFollower, sockfd)){
       res->type = ERROR;
       goto end2;
     }
