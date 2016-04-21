@@ -210,7 +210,7 @@ void tpcleader_handle_tpc(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
     kvresponse_clear(&resFollower);
     kvrequest_send(&reqPh2, sockfd);
     kvresponse_receive(&resFollower, sockfd);
-    if(resFollower.type == VOTE){
+    if(resFollower.type == ERROR){
       res->type = ERROR;
       goto end2;
     }
