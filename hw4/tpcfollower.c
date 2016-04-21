@@ -222,11 +222,13 @@ int tpcfollower_rebuild_state(tpcfollower_t *server) {
   /* TODO: Implement me! */
   logentry_t *log_entry = malloc(sizeof(logentry_t));
   tpclog_iterate_begin(&(server->log));
-  tpclog_iterate_next(&(server->log), log_entry);
-  server->pending_msg = log_entry->type;
-  strcpy(server->pending_key, log_entry->data);
-  strcpy(server->pending_value, log_entry->data 
-    + strlen(server->pending_key) + 1);
+  if(tpclog_iterate_has_next(&(server->log))){
+    tpclog_iterate_next(&(server->log), log_entry);
+    server->pending_msg = log_entry->type;
+    strcpy(server->pending_key, log_entry->data);
+    strcpy(server->pending_value, log_entry->data 
+      + strlen(server->pending_key) + 1);
+  }
   while(tpclog_iterate_has_next(&(server->log))){
     tpclog_iterate_next(&(server->log), log_entry);
   }
@@ -241,8 +243,10 @@ int tpcfollower_rebuild_state(tpcfollower_t *server) {
   }else if(log_entry->type == ABORT){
     tpclog_clear_log(&(server->log));
     server->state = TPC_INIT;
-  }else{
+  }else if((log_entry->type == PUTREQ) || (log_entry->type == DELREQ)){
     server->state = TPC_READY;
+  }else{
+    server->state = TPC_INIT;
   }
   free(log_entry);
   return 0;
