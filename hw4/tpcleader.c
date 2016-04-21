@@ -194,7 +194,6 @@ void tpcleader_handle_tpc(tpcleader_t *leader, kvrequest_t *req, kvresponse_t *r
   for(counter = 0; counter < leader->redundancy; counter++){
     sockfd = elem->sockfd;
     kvresponse_clear(&resFollower);
-    kvresponse_receive(&resFollower, sockfd);
     if(!(kvresponse_receive(&resFollower, sockfd)) || (strcmp(resFollower.body, MSG_COMMIT) != 0)){
       commit = 0;
     }
