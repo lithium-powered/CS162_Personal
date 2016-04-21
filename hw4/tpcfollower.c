@@ -163,20 +163,22 @@ void tpcfollower_handle_tpc(tpcfollower_t *server, kvrequest_t *req, kvresponse_
       strcpy(res->body, GETMSG(ret));
     }
   }else if(req->type == COMMIT){
+    tpclog_log(&(server->log), COMMIT, NULL, NULL);
     if(server->state != TPC_READY){
       //Do nothing
     }else if(server->pending_msg == PUTREQ){
       tpcfollower_put(server, server->pending_key, server->pending_value);
     }else if(server->pending_msg == DELREQ){
       tpcfollower_del(server, server->pending_key);
-    }else{
-
     }
     res->type = ACK;
     server->state = TPC_INIT;
+    tpclog_clear_log(&(server->log));
   }else if(req->type == ABORT){
+    tpclog_log(&(server->log), ABORT, NULL, NULL);
     res->type = ACK;
     server->state = TPC_INIT;
+    tpclog_clear_log(&(server->log));
   }else{
     res->type = ERROR;
     strcpy(res->body, ERRMSG_GENERIC_ERROR);
@@ -218,7 +220,33 @@ void tpcfollower_handle(tpcfollower_t *server, int sockfd) {
  */
 int tpcfollower_rebuild_state(tpcfollower_t *server) {
   /* TODO: Implement me! */
-  return -1;
+  logentry_t *log_entry = malloc(sizeof(logentry_t));
+  tpclog_iterate_begin(&(server->log));
+  tpclog_iterate_next(&(server->log), log_entry);
+  server->pending_msg = log_entry->type;
+  strcpy(server->pending_key, log_entry->data);
+  strcpy(server->pending_value, log_entry->data 
+    + strlen(server->pending_key) + 1);
+  while(tpclog_iterate_has_next(&(server->log))){
+    tpclog_iterate_next(&(server->log), log_entry);
+  }
+  if(log_entry->type == COMMIT){
+    server->state = TPC_COMMIT;
+    if(server->pending_msg == PUTREQ){
+      tpcfollower_put(server, server->pending_key, server->pending_value);
+    }else if(server->pending_msg == DELREQ){
+      tpcfollower_del(server, server->pending_key);
+    }
+    server->state = TPC_INIT;
+  }else if(log_entry->type == ABORT){
+    tpclog_clear_log(&(server->log));
+    server->state = TPC_INIT;
+  }else{
+    server->state = TPC_READY;
+  }
+  free(log_entry);
+  return 0;
+
 }
 
 /* Deletes all current entries in SERVER's store and removes the store
